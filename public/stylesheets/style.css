@@ -1,0 +1,23 @@
+body {
+  background: #f5f7fa;
+  margin: 0;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+/* SVG Styles */
+svg.conveyor-belt {
+  width: 80%;
+  max-width: 750px;
+}
+
+.iot-box, #rotator {
+  transform-origin: 50% 50% 0;
+}
+
+.iot-box {
+  transform: translateY(-252px) scale(0.5);
+}
