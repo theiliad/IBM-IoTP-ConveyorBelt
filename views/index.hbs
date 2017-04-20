@@ -11,8 +11,8 @@
   <body>
     <div id="svg-container">
         <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-            viewBox="0 0 1073.523 800" style="enable-background:new 0 0 1073.523 800;" xml:space="preserve" class="conveyor-belt">
-            <rect id="XMLID_2_" style="fill:#F5F7FA;" width="1073.523" height="800"/>
+            viewBox="0 0 1073.523 703" style="enable-background:new 0 0 1073.523 703;" xml:space="preserve" class="conveyor-belt">
+            <rect id="XMLID_2_" style="fill:#F5F7FA;" width="1073.523" height="703"/>
 
             <path id="XMLID_127_" style="fill:#E3EAF2;" d="M1019.56,689.02c0,3.63-11.24,6.91-29.36,9.27c-6.28,0.81-13.38,1.52-21.13,2.08
                 c-1.85,0.14-3.74,0.27-5.67,0.38c-12.52,0.78-26.5,1.22-41.24,1.22c-20.12,0-38.81-0.81-54.33-2.2c-5.44-0.49-10.48-1.05-15.06-1.66
@@ -134,12 +134,38 @@
         </svg>
     </div>
 
-    <a href="#" class="btn stop">
-        Stop
-    </a>
+    <div class="controls">
+        <div class="buttons">
+            <a href="#" class="btn stop">
+                Stop
+            </a>
 
-    <a href="#" class="btn start" disabled>
-        Start
-    </a>
+            <a href="#" class="btn start" disabled>
+                Start
+            </a>
+        </div>
+
+        <div>
+            <p>
+                <b>
+                    Adjust Speed
+                </b>
+            </p>
+
+            <div class="buttons">
+                <a href="#" class="btn btn-compact speed-down">
+                    -
+                </a>
+
+                <span id="speed-value">
+                    1.0x
+                </span>
+
+                <a href="#" class="btn btn-compact speed-up" disabled>
+                    +
+                </a>
+            </div>
+        </div>
+    </div>
   </body>
 </html>
