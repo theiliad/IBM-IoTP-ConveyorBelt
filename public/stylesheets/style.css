@@ -21,3 +21,34 @@ svg.conveyor-belt {
 .iot-box {
   transform: translateY(-252px) scale(0.5);
 }
+
+a.btn {
+  display: table;
+  padding: 10px 25px;
+  text-decoration: none;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+
+a.btn.stop,
+a.btn.start {
+  float: left;
+  color: #fff;
+  margin-left: 15px;
+}
+
+a.btn.stop {
+  background: red;
+  margin-left: 30px;
+}
+
+a.btn.start {
+  background: green;
+}
+
+a.btn.disabled {
+   pointer-events: none;
+   cursor: default;
+   opacity: 0.45;
+}
