@@ -28,11 +28,7 @@ function configureCredentials(vcap) {
 	config = vcap;
 
 	var iotService = config['iotf-service'];
-	for (var index in iotService) {
-		if (iotService[index].name === 'iotp-for-phone') {
-			credentials = iotService[index].credentials;
-		}
-	}
+  credentials = iotService[0].credentials;
 }
 
 try {
@@ -55,6 +51,8 @@ var basicConfig = {
 	apiKey: credentials.apiKey,
 	apiToken: credentials.apiToken
 };
+
+app.set('iotf_credentials', basicConfig);
 /* === VCAP_SERVICES - END === */
 
 app.use('/', indexRoutes);

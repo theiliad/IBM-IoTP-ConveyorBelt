@@ -1,9 +1,10 @@
 var express = require('express')
-  , router  = express.Router()
-  , Client  = require('ibmiotf');
+  , router  = express.Router();
 
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+  var config = req.app.get('iotf_credentials');
+
+  res.send(req.app.get('iotf_credentials'));
 });
 
 module.exports = router;
