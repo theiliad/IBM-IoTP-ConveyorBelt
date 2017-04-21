@@ -22,6 +22,41 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+/* === VCAP_SERVICES - START === */
+/* === Grab VCAP_SERVICES information either from Bluemix, or from a local file called VCAP_SERVICES.json === */
+function configureCredentials(vcap) {
+	config = vcap;
+
+	var iotService = config['iotf-service'];
+	for (var index in iotService) {
+		if (iotService[index].name === 'iotp-for-phone') {
+			credentials = iotService[index].credentials;
+		}
+	}
+}
+
+try {
+	var VCAP_SERVICES = require(__dirname + '/VCAP_SERVICES.json');
+
+	configureCredentials(VCAP_SERVICES);
+} catch (error) {
+	console.log(error);
+	console.log("Fallback to Bluemix VCAP_SERVICES");
+
+	if (process.env.VCAP_SERVICES) {
+		configureCredentials(JSON.parse(process.env.VCAP_SERVICES));
+	} else {
+		console.log("ERROR: IoT Service was not bound!");
+	}
+}
+
+var basicConfig = {
+	org: credentials.org,
+	apiKey: credentials.apiKey,
+	apiToken: credentials.apiToken
+};
+/* === VCAP_SERVICES - END === */
+
 app.use('/', indexRoutes);
 app.use('/api', ibmIoTRoutes);
 
