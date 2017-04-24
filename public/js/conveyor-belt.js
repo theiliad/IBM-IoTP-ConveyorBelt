@@ -74,9 +74,6 @@ function registerDevice() {
 
             // After registration is successful, attempt connecting to MQTT
             connectDevice();
-            
-            // Publish every 100 milliseconds
-            setInterval(publish, 100);
         },
         error: function(xhr, status, error) {
             if (xhr.status === 403) {
@@ -96,7 +93,9 @@ function registerDevice() {
 // ***** 2. MQTT ***** //
 
 // Once connected, this functions is called to publish MQTT events to the IoT Platform
-function publish() {
+function publish(publishFields) {
+    console.log(publishFields);
+
     // We only attempt to publish if we're actually connected, saving CPU and battery
     if (isConnected) {
         // The payload that will be sent (all fields go in here)
@@ -104,9 +103,15 @@ function publish() {
             "d": {
                 "id": deviceInfo.deviceId,
                 "ts": (new Date()).getTime(),
-                "rpm": animationSpeed
             }
         };
+
+        for (var i = 0; i < Object.keys(publishFields).length; i++) {
+            var index = Object.keys(publishFields)[i];
+            payload.d[index] = publishFields[index];
+        }
+
+        console.log(payload);
 
         // Create an MQTT message object from the payload
         var message = new Paho.MQTT.Message(JSON.stringify(payload));
@@ -124,6 +129,7 @@ function publish() {
             isConnected = false;
             changeConnectionStatusImage("images/disconnected.svg");
             document.getElementById("connection").innerHTML = "Disconnected";
+
             setTimeout(connectDevice(), 1000);
         }
     }
@@ -137,6 +143,13 @@ function onConnectSuccess() {
     isConnected = true;
     changeConnectionStatusImage("images/connected.svg");
     document.getElementById("connection").innerHTML = "Connected";
+
+    var publishFields = {
+        running: stop ? false : true,
+    };
+
+    if (!stop) publishFields["rpm"] = animationSpeed.toFixed(1);
+    publish(publishFields);
 }
 
 // Once MQTT Fails
@@ -242,7 +255,8 @@ $(document).ready(function() {
 
     $("a.btn.start").addClass("disabled");
 
-    $("a.stop").click(function() {
+    $("a.stop").click(function(event) {
+        event.preventDefault();
         console.log("STOP Clicked");
 
         stop = true;
@@ -254,9 +268,16 @@ $(document).ready(function() {
         if (!$("a.btn.stop").hasClass("disabled")) {
             $("a.btn.stop").addClass("disabled");
         }
+
+        if (isConnected) {
+            publish({
+                    "running": false
+            });
+        }
     });
 
-    $("a.start").click(function() {
+    $("a.start").click(function(event) {
+        event.preventDefault();
         console.log("START Clicked");
 
         stop = false;
@@ -269,6 +290,11 @@ $(document).ready(function() {
         if (!$("a.btn.start").hasClass("disabled")) {
             $("a.btn.start").addClass("disabled");
         }
+
+        publish({
+            "running": true,
+            "rpm": animationSpeed.toFixed(1)
+        });
     });
 
     function round(value, decimals) {
@@ -279,11 +305,19 @@ $(document).ready(function() {
         $("span#speed-value").html(round(animationSpeed, 1) + "x");
     }
 
-    $("a.speed-down").click(function() {
+    $("a.speed-down").click(function(event) {
+        event.preventDefault();
         console.log("SPEED DOWN Clicked");
         
         durationMultiplier += 0.1;
         animationSpeed -= 0.1;
+
+        if (isConnected) {
+            publish({
+                "running": true,
+                "rpm": animationSpeed.toFixed(1)
+            });
+        }
         
         rotator();
         updateSpeedOnScreen();
@@ -291,11 +325,19 @@ $(document).ready(function() {
         console.log(animationSpeed);
     });
 
-    $("a.speed-up").click(function() {
+    $("a.speed-up").click(function(event) {
+        event.preventDefault();
         console.log("SPEED UP Clicked");
         
         durationMultiplier -= 0.1;
         animationSpeed += 0.1;
+
+        if (isConnected) {
+            publish({
+                "rpm": animationSpeed.toFixed(1),
+                "running": true
+            });
+        }
 
         rotator();
         updateSpeedOnScreen();
