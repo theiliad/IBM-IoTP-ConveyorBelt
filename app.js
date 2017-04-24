@@ -52,7 +52,17 @@ var basicConfig = {
 	apiToken: credentials.apiToken
 };
 
-app.set('iotf_credentials', basicConfig);
+var options = {
+  host: basicConfig.org + '.internetofthings.ibmcloud.com',
+  port: 443,
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  auth: basicConfig.apiKey + ':' + basicConfig.apiToken
+};
+
+app.set('iot_credentials', basicConfig);
+app.set('iot_options', options);
 /* === VCAP_SERVICES - END === */
 
 app.use('/', indexRoutes);

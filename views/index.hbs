@@ -8,7 +8,8 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.0/velocity.min.js"></script>
-    <script src="/js/animations.js"></script>
+    <script src="/js/conveyor-belt.js"></script>
+    <script src="/js/mqttws31.js"></script>
   </head>
   <body>
     <div id="svg-container">
@@ -168,6 +169,16 @@
                 </a>
             </div>
         </div>
+    </div>
+
+    <div id="main" class="main">
+        <h1>Your device ID:</h1>
+        <h2><span id="deviceId"></span></h2>
+        <p style="padding-top:10px">
+            <img id="connectionImage" src="images/disconnected.svg" class="iot-connected-image" style="vertical-align:middle">
+            <span id="connection">Disconnected</span>
+        </p>​
+        <h3>Published Messages: <span id='msgCount'></h3>
     </div>
   </body>
 </html>
