@@ -9,8 +9,6 @@ router.post('/registerDevice', function(req, res) {
   options['method'] = 'POST';
   options['path'] = 'api/v0002/device/types';
 
-	console.log(req.body);
-
 	var deviceId = null, typeId = null, password = null;
 	if (req.body.deviceId) { deviceId = req.body.deviceId; }
 	if (req.body.typeId) { typeId = req.body.typeId; }
@@ -30,7 +28,6 @@ router.post('/registerDevice', function(req, res) {
 
 		type_res.on('end', function() {
 			console.log("createDeviceType end: ", str.toString());
-      console.log(type_res);
       console.log(basicConfig);
 
 			var dev_options = {

@@ -29,6 +29,7 @@ function configureCredentials(vcap) {
 
 	var iotService = config['iotf-service'];
   credentials = iotService[0].credentials;
+  credentials["serviceName"] = iotService[0].name;
 }
 
 try {
@@ -49,7 +50,8 @@ try {
 var basicConfig = {
 	org: credentials.org,
 	apiKey: credentials.apiKey,
-	apiToken: credentials.apiToken
+	apiToken: credentials.apiToken,
+  serviceName: credentials.serviceName
 };
 
 var options = {

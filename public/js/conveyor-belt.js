@@ -1,6 +1,9 @@
+// Variables used for the animations
 var stop = false;
 var animationSpeed = 1.0;
-var durationMultiplier = 1.0;
+var animatedElements = [];
+
+// IoT Platform & MQTT Related Variables
 var deviceInfo = {
     // You can onfigure these to your liking, or automate the generation of them
     deviceId: "belt1",
@@ -15,6 +18,7 @@ var iot_clientid;
 var iot_username;
 var iot_password;
 var topic;
+var iot_service_link;
 
 var isConnected = false;
 window.msgCount = 0;
@@ -44,12 +48,25 @@ function init() {
 
             // Set necessary fields for the MQTT Connection to the IoT Platform
             window.iot_host = response.org + ".messaging.internetofthings.ibmcloud.com";
-            window.iot_port = 1883;
+            window.iot_port = 443;
             window.iot_clientid = "d:" + response.org+ ":" + deviceInfo.typeId + ":" + deviceInfo.deviceId;
             window.client = new Paho.MQTT.Client(window.iot_host, window.iot_port, window.iot_clientid);
             window.apiToken = response.apiToken;
 
             registerDevice();
+        },
+        error: function(xhr, status, error) {
+            console.error("Could not fetch organization information.");
+        }
+    });
+
+    $.ajax({
+        url: "/iotServiceLink",
+        type: "GET",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(response) {
+            iot_service_link = response;
         },
         error: function(xhr, status, error) {
             console.error("Could not fetch organization information.");
@@ -106,6 +123,10 @@ function publish(publishFields) {
             }
         };
 
+        if (publishFields.running === false) {
+            publishFields["rpm"] = 0;
+        }
+
         for (var i = 0; i < Object.keys(publishFields).length; i++) {
             var index = Object.keys(publishFields)[i];
             payload.d[index] = publishFields[index];
@@ -119,7 +140,10 @@ function publish(publishFields) {
         try {
             window.client.send(message);
             window.msgCount += 1;
-            $("#msgCount").html(window.msgCount);
+            $("pre code#publishedMessage").html(JSON.stringify(payload, null, "\t"));
+            $('pre code#publishedMessage').each(function(i, block) {
+                hljs.highlightBlock(block);
+            });
             
             console.log("[%s] Published", new Date().getTime());
         } catch (err) {
@@ -140,9 +164,12 @@ function onConnectSuccess() {
     // The device connected successfully
     console.log("Connected Successfully!");
 
+    if ($("div#publishedMessage.hidden").hasClass("hidden")) $("div#publishedMessage.hidden").removeClass("hidden");
+
     isConnected = true;
     changeConnectionStatusImage("images/connected.svg");
-    document.getElementById("connection").innerHTML = "Connected";
+    document.getElementById("connection").innerHTML = "Connected" +
+                        (iot_service_link !== undefined ? (" to <a href='" + iot_service_link.url + "' target='_blank'>" + iot_service_link.serviceName + "</a>") : "");
 
     var publishFields = {
         running: stop ? false : true,
@@ -189,54 +216,39 @@ function connectDevice() {
 // ***** 3. Animations/Interactions ***** //
 function dropbox(index) {
     if (!stop) {
-        $("g#box-" + index)
-            .delay(0)
-            .velocity({ translateY: -252 }, {
-                duration: durationMultiplier * 0, 
-                easing: "linear"
-            })
-            .velocity({ translateY: 0 }, {
-                duration: durationMultiplier * 250, 
-                easing: "easeInQuad"
-            })
-            .velocity({ translateX: 237.5 }, {
-                duration: durationMultiplier * 1000, 
-                easing: "linear",
-                complete: function() { 
-                    if (index === "1") {
-                        dropbox("2");
-                    } else if (index === "2") {
-                        dropbox("1");
-                    }
+        var tween = Tweene.line($("g#box-" + index))
+            .from({translateY: -252})
+            .to({translateY: 0}, 400, 100, "easeInQuad")
+            .to({translateX: 237.5}, 1000, '++=0', 'linear')
+            .to({translateX: 575}, 1000, '++=0', 'linear', function() {
+                if (index === "1") {
+                    dropbox("2");
+                } else if (index === "2") {
+                    dropbox("1");
                 }
             })
-            .velocity({ translateX: 575 }, {
-                duration: durationMultiplier * 1000, 
-                easing: "linear"
+            .to({translateX: 630, translateY: 15, rotateZ: 30}, 300, '++=0', 'linear')
+            .to({translateX: 650, translateY: 30, rotateZ: 40}, 100, '++=0', 'linear')
+            .to({translateX: 715, translateY: 150}, 300, '++=0', 'linear')
+            .to({translateY: 400, rotateZ: 100}, 300, '++=0', 'linear')
+            .to({ translateY: -252, translateX: 0, rotateZ: 0 }, 0, '++=0', 'linear', function() {
+                animatedElements.splice(animatedElements.indexOf(tween), 1);
             })
-            .velocity({ translateX: 630, translateY: 15, rotateZ: 30 }, {
-                duration: durationMultiplier * 300, 
-                easing: "linear"
-            })
-            .velocity({ translateX: 715, translateY: 150, rotateZ: 85 }, {
-                duration: durationMultiplier * 300, 
-                easing: "linear"
-            })
-            .velocity({ translateY: 400, rotateZ: 100 }, {
-                duration: durationMultiplier * 300, 
-                easing: "linear"
-            })
-            .velocity({ translateY: -252, translateX: 0, rotateZ: 0 }, {
-                duration: durationMultiplier * 0
-            });
+            .speed(animationSpeed)
+            .loops(0)
+            .play();
+
+        animatedElements.push(tween);
     }
 }
 
 function rotator() {
+    // if (animatedElements.indexOf("line#rotator") === -1) animatedElements.push("line#rotator");
+
     $("line#rotator")
         .delay(0)
         .velocity({ rotateZ: 360 }, {
-            duration: durationMultiplier * 2000, 
+            duration: 2000, 
             easing: "linear",
             loop: true
         });
@@ -255,11 +267,20 @@ $(document).ready(function() {
 
     $("a.btn.start").addClass("disabled");
 
+    function toggleAnimations(pause) {
+        stop = pause ? true : false;
+        
+        for (var i = 0; i < animatedElements.length; i++) {
+            if (pause) animatedElements[i].pause();
+            else animatedElements[i].resume();
+        }
+    }
+
     $("a.stop").click(function(event) {
         event.preventDefault();
         console.log("STOP Clicked");
 
-        stop = true;
+        toggleAnimations(true);
 
         if ($("a.btn.start").hasClass("disabled")) {
             $("a.btn.start").removeClass("disabled");
@@ -288,8 +309,7 @@ $(document).ready(function() {
         event.preventDefault();
         console.log("START Clicked");
 
-        stop = false;
-        dropbox("1");
+        toggleAnimations(false);
 
         if ($("a.btn.stop").hasClass("disabled")) {
             $("a.btn.stop").removeClass("disabled");
@@ -321,12 +341,18 @@ $(document).ready(function() {
         $("span#speed-value").html(round(animationSpeed, 1) + "x");
     }
 
+    function adjustSpeed() {
+        for (var i = 0; i < animatedElements.length; i++) {
+            animatedElements[i].speed(animationSpeed);
+        }
+    }
+
     $("a.speed-down").click(function(event) {
         event.preventDefault();
         console.log("SPEED DOWN Clicked");
-        
-        durationMultiplier += 0.1;
+
         animationSpeed -= 0.1;
+        adjustSpeed();
 
         if (isConnected) {
             publish({
@@ -339,14 +365,18 @@ $(document).ready(function() {
         updateSpeedOnScreen();
 
         console.log(animationSpeed);
+
+        if (animationSpeed.toFixed(1) === "0.1") {
+            $("a.speed-down").addClass("disabled");
+        }
     });
 
     $("a.speed-up").click(function(event) {
         event.preventDefault();
         console.log("SPEED UP Clicked");
         
-        durationMultiplier -= 0.1;
         animationSpeed += 0.1;
+        adjustSpeed();
 
         if (isConnected) {
             publish({
