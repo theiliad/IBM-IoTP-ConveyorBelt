@@ -269,6 +269,14 @@ $(document).ready(function() {
             $("a.btn.stop").addClass("disabled");
         }
 
+        if (!$("a.speed-down").hasClass("disabled")) {
+            $("a.speed-down").addClass("disabled");
+        }
+
+        if (!$("a.speed-up").hasClass("disabled")) {
+            $("a.speed-up").addClass("disabled");
+        }
+
         if (isConnected) {
             publish({
                     "running": false
@@ -289,6 +297,14 @@ $(document).ready(function() {
 
         if (!$("a.btn.start").hasClass("disabled")) {
             $("a.btn.start").addClass("disabled");
+        }
+
+        if ($("a.speed-down").hasClass("disabled")) {
+            $("a.speed-down").removeClass("disabled");
+        }
+
+        if ($("a.speed-up").hasClass("disabled")) {
+            $("a.speed-up").removeClass("disabled");
         }
 
         publish({
