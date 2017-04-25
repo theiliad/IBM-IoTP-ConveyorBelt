@@ -35,7 +35,11 @@ function configureCredentials(vcap) {
 try {
 	var VCAP_SERVICES = require(__dirname + '/VCAP_SERVICES.json');
 
-	configureCredentials(VCAP_SERVICES);
+  if (process.env.VCAP_SERVICES) {
+		configureCredentials(JSON.parse(process.env.VCAP_SERVICES));
+	} else {
+		configureCredentials(VCAP_SERVICES);
+	}
 } catch (error) {
 	console.log(error);
 	console.log("Fallback to Bluemix VCAP_SERVICES");
