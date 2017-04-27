@@ -201,6 +201,10 @@
     <div class="modal" id="modal-login">
         <div class="modal-content">
             <form id="form-login">
+                <p style="line-height: 21px; opacity: 0.85; margin-bottom: 25px;">
+                    Enter a unique device ID and token to register a new conveyor belt with the IoT Platform service.
+                </p>
+
                 <div class="form-input">
                     <label for="username">Device ID:</label>
                     <input type="text" value="belt1" id="username" />
@@ -208,7 +212,7 @@
 
                 <div class="form-input">
                     <!-- Password is the Device Token used to register the device-->
-                    <label for="password" style="margin-top: 20px;">Password:</label>
+                    <label for="password" style="margin-top: 20px;">Password (Token):</label>
                     <input type="password" value="test123pass" id="password" />
                 </div>
 
@@ -219,7 +223,7 @@
                 </p>
 
                 <button href="#">
-                    Register
+                    Ok
                 </button>
             </form>
         </div>
