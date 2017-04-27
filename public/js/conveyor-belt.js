@@ -11,6 +11,18 @@ var deviceInfo = {
     password: "test123pass"
 };
 
+// Mobile Sensor Related Variables
+var ax = 0,
+	ay = 0,
+	az = 0,
+	oa = 0,
+	ob = 0,
+	og = 0;
+
+var last_sample = {};
+var shifted_filter = {};
+// High-pass filter to remove gravity offset from the acceleration waveforms
+
 var client;
 var iot_host;
 var iot_port;
@@ -27,9 +39,14 @@ window.msgCount = 0;
 /*
    1. IoT Platform Device
    2. MQTT
-   3. Animations/Interactions
+   3. Mobile Sensor Data
+   4. Animations/Interactions
 */
 // ********** TABLE OF CONTENTS - END ********** //
+
+
+
+
 
 
 // ********************************** //
@@ -51,8 +68,7 @@ function init() {
             window.iot_port = 443;
             window.iot_clientid = "d:" + response.org+ ":" + deviceInfo.typeId + ":" + deviceInfo.deviceId;
             window.client = new Paho.MQTT.Client(window.iot_host, window.iot_port, window.iot_clientid);
-            window.apiToken = response.apiToken;
-
+            
             registerDevice();
         },
         error: function(xhr, status, error) {
@@ -214,7 +230,50 @@ function connectDevice() {
 
 
 // ************************************** //
-// ***** 3. Animations/Interactions ***** //
+// ***** 3. Mobile Sensor Data ***** //
+function filterOffset(sample, channel) {
+    if(sample === null || sample === undefined) return 0;
+    if(last_sample[channel] === undefined) last_sample[channel] = sample;
+    if(shifted_filter[channel] === undefined) shifted_filter[channel] = 0;
+    var shiftedFCL = shifted_filter[channel] + ((sample-last_sample[channel])*256);
+    shifted_filter[channel] = shiftedFCL - (shiftedFCL/256);
+    last_sample[channel] = sample;
+    return ((shifted_filter[channel]+128)/256);
+}
+
+window.ondevicemotion = function(event) {
+    ax = parseFloat((event.acceleration.x || filterOffset(event.accelerationIncludingGravity.x, "ax") || 0));
+    ay = parseFloat((event.acceleration.y || filterOffset(event.accelerationIncludingGravity.y, "ay") || 0));
+    az = parseFloat((event.acceleration.z || filterOffset(event.accelerationIncludingGravity.z, "az") || 0));
+
+    document.getElementById("accx").innerHTML = ax.toFixed(2);
+    document.getElementById("accy").innerHTML = ay.toFixed(2);
+    document.getElementById("accz").innerHTML = az.toFixed(2);
+};
+
+window.ondeviceorientation = function(event) {
+    oa = (event.alpha || 0);
+    ob = (event.beta || 0);
+    og = (event.gamma || 0);
+
+    if (event.webkitCompassHeading) {
+        oa = -event.webkitCompassHeading;
+    }
+
+    document.getElementById("alpha").innerHTML = oa.toFixed(2);
+    document.getElementById("beta").innerHTML = ob.toFixed(2);
+    document.getElementById("gamma").innerHTML = og.toFixed(2);
+};
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+    results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+// ************************************** //
+// ***** 4. Animations/Interactions ***** //
 function dropbox(index) {
     if (!stop) {
         var tween = Tweene.line($("g#box-" + index))

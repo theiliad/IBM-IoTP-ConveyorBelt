@@ -10,7 +10,10 @@ router.get('/', function(req, res, next) {
 router.get('/credentials', function(req, res) {
   var basicConfig = req.app.get('iot_credentials');
 
-	res.json(basicConfig);
+	res.json({
+		org: basicConfig.org,
+		serviceName: basicConfig.serviceName
+	});
 });
 
 router.get('/iotServiceLink', function(req, res) {
