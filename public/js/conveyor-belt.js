@@ -14,10 +14,7 @@ var deviceInfo = {
 // Mobile Sensor Related Variables
 var ax = 0,
 	ay = 0,
-	az = 0,
-	oa = 0,
-	ob = 0,
-	og = 0;
+	az = 0;
 
 var last_sample = {};
 var shifted_filter = {};
@@ -68,7 +65,7 @@ function init() {
             window.iot_port = 443;
             window.iot_clientid = "d:" + response.org+ ":" + deviceInfo.typeId + ":" + deviceInfo.deviceId;
             window.client = new Paho.MQTT.Client(window.iot_host, window.iot_port, window.iot_clientid);
-            
+
             registerDevice();
         },
         error: function(xhr, status, error) {
@@ -136,6 +133,7 @@ function publish(publishFields) {
             "d": {
                 "id": deviceInfo.deviceId,
                 "ts": (new Date()).getTime(),
+                "ay": Math.max(ax, ay, az).toFixed(2)
             }
         };
 
@@ -245,32 +243,7 @@ window.ondevicemotion = function(event) {
     ax = parseFloat((event.acceleration.x || filterOffset(event.accelerationIncludingGravity.x, "ax") || 0));
     ay = parseFloat((event.acceleration.y || filterOffset(event.accelerationIncludingGravity.y, "ay") || 0));
     az = parseFloat((event.acceleration.z || filterOffset(event.accelerationIncludingGravity.z, "az") || 0));
-
-    document.getElementById("accx").innerHTML = ax.toFixed(2);
-    document.getElementById("accy").innerHTML = ay.toFixed(2);
-    document.getElementById("accz").innerHTML = az.toFixed(2);
 };
-
-window.ondeviceorientation = function(event) {
-    oa = (event.alpha || 0);
-    ob = (event.beta || 0);
-    og = (event.gamma || 0);
-
-    if (event.webkitCompassHeading) {
-        oa = -event.webkitCompassHeading;
-    }
-
-    document.getElementById("alpha").innerHTML = oa.toFixed(2);
-    document.getElementById("beta").innerHTML = ob.toFixed(2);
-    document.getElementById("gamma").innerHTML = og.toFixed(2);
-};
-
-function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-    results = regex.exec(location.search);
-    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
 
 // ************************************** //
 // ***** 4. Animations/Interactions ***** //
@@ -320,7 +293,39 @@ function changeConnectionStatusImage(image) {
 }
 
 $(document).ready(function() {
-    init();
+    $("#form-login").submit(function( event ) {
+        event.preventDefault();
+
+        var usernameEntered = $("input#username").val();
+        var passwordEntered = $("input#password").val();
+
+        function showErrorOnRegister(message) {
+            if ($("form#form-login p.message").hasClass("hidden")) {
+                $("form#form-login p.message").removeClass("hidden");
+            }
+
+            $("form#form-login p.message b").html(message);
+        }
+
+        if (usernameEntered.length === 0 && passwordEntered.length === 0) {
+            showErrorOnRegister("a Device ID & Password");
+        } else if (usernameEntered.length === 0) {
+            showErrorOnRegister("a Device ID");
+        } else if (passwordEntered.length === 0) {
+            showErrorOnRegister("a Password");
+        } else {
+            if (!$("form#form-login p.message").hasClass("hidden")) {
+                $("form#form-login p.message").addClass("hidden");
+            }
+
+            deviceInfo.deviceId = $("input#username").val();
+            deviceInfo.password = $("input#password").val();
+            
+            $("div#modal-login").fadeOut( "fast", function() {
+                init();
+            });
+        }
+    });
 
     rotator();
     dropbox("1");

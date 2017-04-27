@@ -197,5 +197,32 @@
             </div>
         </div>
     </div>
+
+    <div class="modal" id="modal-login">
+        <div class="modal-content">
+            <form id="form-login">
+                <div class="form-input">
+                    <label for="username">Device ID:</label>
+                    <input type="text" value="belt1" id="username" />
+                </div>
+
+                <div class="form-input">
+                    <!-- Password is the Device Token used to register the device-->
+                    <label for="password" style="margin-top: 20px;">Password:</label>
+                    <input type="password" value="test123pass" id="password" />
+                </div>
+
+                <p class="message hidden">
+                    <span>
+                        Please enter <b>a Username</b>
+                    </span>
+                </p>
+
+                <button href="#">
+                    Register
+                </button>
+            </form>
+        </div>
+    </div>
   </body>
 </html>
