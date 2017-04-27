@@ -206,7 +206,8 @@ function connectDevice() {
         onSuccess: onConnectSuccess,
         onFailure: onConnectFailure,
         userName: "use-token-auth",
-        password: deviceInfo.password
+        password: deviceInfo.password,
+        useSSL: true
     });
 }
 
