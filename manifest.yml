@@ -1,3 +1,10 @@
-memory: 64M
-disk_quota: 256M
-command: npm start
+applications:
+- memory: 64M
+- disk_quota: 256M
+- command: npm start
+  services:
+  - iotp-for-conveyor
+declared-services:
+    iotp-for-conveyor:
+      label: iotf-service
+      plan:  iotf-service-free
