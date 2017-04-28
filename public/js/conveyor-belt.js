@@ -248,6 +248,8 @@ window.ondevicemotion = function(event) {
 // ************************************** //
 // ***** 4. Animations/Interactions ***** //
 function dropbox(index) {
+    var firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+
     if (!stop) {
         var tween = Tweene.line($("g#box-" + index))
             .from({translateY: -252})
@@ -260,10 +262,10 @@ function dropbox(index) {
                     dropbox("1");
                 }
             })
-            .to({translateX: 630, translateY: 15, rotateZ: 30}, 300, '++=0', 'linear')
-            .to({translateX: 650, translateY: 30, rotateZ: 40}, 100, '++=0', 'linear')
+            .to({translateX: 630, translateY: 15, rotateZ: firefox ? 0 : 30}, 300, '++=0', 'linear')
+            .to({translateX: 650, translateY: 30, rotateZ: firefox ? 0 : 40}, 100, '++=0', 'linear')
             .to({translateX: 715, translateY: 150}, 300, '++=0', 'linear')
-            .to({translateY: 400, rotateZ: 100}, 300, '++=0', 'linear')
+            .to({translateY: 400, rotateZ: firefox ? 0 : 100}, 300, '++=0', 'linear')
             .to({ translateY: -252, translateX: 0, rotateZ: 0 }, 0, '++=0', 'linear', function() {
                 animatedElements.splice(animatedElements.indexOf(tween), 1);
             })
