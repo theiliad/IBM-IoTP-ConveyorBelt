@@ -426,10 +426,11 @@ $(document).ready(function() {
     }
 
     var adjustSpeed =debounce(function adjustSpeed() {
+      console.log("After debounce");
         for (var i = 0; i < animatedElements.length; i++) {
             animatedElements[i].speed(animationSpeed);
         }
-    },1000,true);
+    },1000,false);
 
     $("a.speed-down").click(function(event) {
         event.preventDefault();
