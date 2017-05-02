@@ -158,7 +158,7 @@ function publish(publishFields) {
             $('pre code#publishedMessage').each(function(i, block) {
                 hljs.highlightBlock(block);
             });
-            
+
             console.log("[%s] Published", new Date().getTime());
         } catch (err) {
             console.error(err);
@@ -247,13 +247,30 @@ window.ondevicemotion = function(event) {
 
 // ************************************** //
 // ***** 4. Animations/Interactions ***** //
+//***** to handle multiple clicks*****//
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};
+
 function dropbox(index) {
     var firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
     if (!stop) {
         var tween = Tweene.line($("g#box-" + index))
             .from({translateY: -252})
-            .to({translateY: 0}, 400, 100, "easeInQuad")
+            //.to({translateY: 0}, 400, 100, "easeInQuad")
+            .to({translateY: 0,easing:"easeInQuad"} )
             .to({translateX: 237.5}, 1000, '++=0', 'linear')
             .to({translateX: 575}, 1000, '++=0', 'linear', function() {
                 if (index === "1") {
@@ -283,7 +300,7 @@ function rotator() {
     $("line#rotator")
         .delay(0)
         .velocity({ rotateZ: 360 }, {
-            duration: 2000, 
+            duration: 2000,
             easing: "linear",
             loop: true
         });
@@ -322,7 +339,7 @@ $(document).ready(function() {
 
             deviceInfo.deviceId = $("input#username").val();
             deviceInfo.password = $("input#password").val();
-            
+
             $("div#modal-login").fadeOut( "fast", function() {
                 init();
             });
@@ -336,7 +353,7 @@ $(document).ready(function() {
 
     function toggleAnimations(pause) {
         stop = pause ? true : false;
-        
+
         for (var i = 0; i < animatedElements.length; i++) {
             if (pause) animatedElements[i].pause();
             else animatedElements[i].resume();
@@ -408,11 +425,11 @@ $(document).ready(function() {
         $("span#speed-value").html(round(animationSpeed, 1) + "x");
     }
 
-    function adjustSpeed() {
+    var adjustSpeed =debounce(function adjustSpeed() {
         for (var i = 0; i < animatedElements.length; i++) {
             animatedElements[i].speed(animationSpeed);
         }
-    }
+    },1000,true);
 
     $("a.speed-down").click(function(event) {
         event.preventDefault();
@@ -427,8 +444,8 @@ $(document).ready(function() {
                 "rpm": animationSpeed.toFixed(1)
             });
         }
-        
-        rotator();
+
+        //rotator();
         updateSpeedOnScreen();
 
         console.log(animationSpeed);
@@ -441,7 +458,7 @@ $(document).ready(function() {
     $("a.speed-up").click(function(event) {
         event.preventDefault();
         console.log("SPEED UP Clicked");
-        
+
         animationSpeed += 0.1;
         adjustSpeed();
 
@@ -452,7 +469,7 @@ $(document).ready(function() {
             });
         }
 
-        rotator();
+      //  rotator();
         updateSpeedOnScreen();
 
         console.log(animationSpeed);
