@@ -177,7 +177,7 @@ function publish(publishFields) {
 function onConnectSuccess() {
     // The device connected successfully
     console.log("Connected Successfully!");
-
+    
     if ($("div#publishedMessage.hidden").hasClass("hidden")) $("div#publishedMessage.hidden").removeClass("hidden");
 
     isConnected = true;

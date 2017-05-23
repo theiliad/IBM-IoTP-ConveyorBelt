@@ -5,7 +5,7 @@ body {
 }
 
 a {
-  color: #00B7FF;
+  color: #3d70b2;
 }
 
 label {
@@ -28,7 +28,7 @@ form button {
     margin-top: 20px;
     padding: 10px 25px;
     font-size: 15px;
-    background: green;
+    background: #1BCC49;
     color: #fff;
     border: none;
     outline: none;
@@ -58,16 +58,15 @@ div.header {
   font-size: 17px;
   font-weight: 300;
   line-height: 48px;
-  background-color: #152935;
+  background-color: #3d70b2;
   color: #fff;
   overflow: hidden;
 }
 
 div.header img {
   float: left;
-  width: 50px;
-  margin-right: 15px;
-  margin-left: 30px;
+  width: 33px;
+  margin: 15px 15px 0 30px;
 }
 
 div.header b {
@@ -126,13 +125,13 @@ a.btn.speed-up {
 
 a.btn.stop,
 a.btn.speed-down {
-  background: red;
+  background: #E21717;
   margin-left: 0;
 }
 
 a.btn.start,
 a.btn.speed-up {
-  background: green;
+  background: #1BCC49;
 }
 
 a.btn.disabled {
@@ -142,7 +141,9 @@ a.btn.disabled {
 }
 
 a.btn.btn-compact {
-   padding: 10px 15px;
+   padding: 3px 10px 6px 10px;
+   line-height: 24px;
+   font-size: 21px;
 }
 
 div.buttons span {
