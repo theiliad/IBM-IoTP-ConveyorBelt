@@ -1,4 +1,5 @@
 # conveyor-belt
+<img src="preview.jpg">
 
 A web app that simulates a conveyor belt that sends speed data to IBM Watson IoT Platform.
 
