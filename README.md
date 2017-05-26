@@ -1,4 +1,5 @@
 # conveyor-belt
+<img src="preview.jpg">
 
 A web app that simulates a conveyor belt that sends speed data to IBM Watson IoT Platform.
 
@@ -6,5 +7,5 @@ A web app that simulates a conveyor belt that sends speed data to IBM Watson IoT
 
 ### Deploy through Bluemix devOps
 
-[![Create toolchain](https://bluemix.net/devops/graphics/create_toolchain_button.png)](https://bluemix.net/devops/setup/deploy?repository=) (via Continuous Delivery)
-
+[![Create toolchain](https://bluemix.net/devops/graphics/create_toolchain_button.png)](https://bluemix.net/devops/setup/deploy?repository=)
+<br />(via Continuous Delivery)
