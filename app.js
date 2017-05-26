@@ -21,6 +21,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'node_modules/ibmiotf/dist')));
 
 /* === VCAP_SERVICES - START === */
 /* === Grab VCAP_SERVICES information either from Bluemix, or from a local file called VCAP_SERVICES.json === */

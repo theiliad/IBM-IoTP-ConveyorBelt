@@ -31,6 +31,8 @@
     
     <!-- make Object.keys() available in browsers that do not support -->
     <script src="/js/object-keys-polyfill.js"></script>
+
+    <script src="/iotf-client-bundle.min.js"></script>
     
     <script src="/js/conveyor-belt.js"></script>
   </head>
@@ -214,13 +216,13 @@
 
                 <div class="form-input">
                     <label for="username">Device ID:</label>
-                    <input type="text" value="belt1" id="username" />
+                    <input type="text" id="username" value="fes" />
                 </div>
 
                 <div class="form-input">
                     <!-- Password is the Device Token used to register the device-->
                     <label for="password" style="margin-top: 20px;">Password (Token):</label>
-                    <input type="password" value="test123pass" id="password" />
+                    <input type="password" id="password" value="1234512345" />
                 </div>
 
                 <p class="message hidden">

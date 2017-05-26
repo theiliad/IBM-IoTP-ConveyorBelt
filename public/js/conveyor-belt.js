@@ -6,9 +6,9 @@ var animatedElements = [];
 // IoT Platform & MQTT Related Variables
 var deviceInfo = {
     // You can onfigure these to your liking, or automate the generation of them
-    deviceId: "belt1",
-    typeId: "iot-conveyor-belt",
-    password: "test123pass"
+    deviceId:   "",
+    typeId:     "iot-conveyor-belt",
+    password:   ""
 };
 
 // Mobile Sensor Related Variables
@@ -26,7 +26,7 @@ var iot_port;
 var iot_clientid;
 var iot_username;
 var iot_password;
-var topic;
+var topic = "sensorData";
 var iot_service_link;
 
 var isConnected = false;
@@ -63,9 +63,13 @@ function init() {
             // Set necessary fields for the MQTT Connection to the IoT Platform
             window.iot_host = response.org + ".messaging.internetofthings.ibmcloud.com";
             window.iot_port = 443;
-            window.iot_clientid = "d:" + response.org+ ":" + deviceInfo.typeId + ":" + deviceInfo.deviceId;
-            window.client = new Paho.MQTT.Client(window.iot_host, window.iot_port, window.iot_clientid);
-
+            window.deviceClient = new IBMIoTF.IotfDevice({
+                                                        "org":          response.org,
+                                                        "id":           deviceInfo.deviceId,
+                                                        "type":         deviceInfo.typeId,
+                                                        "auth-method":  "token",
+                                                        "auth-token":   deviceInfo.password
+                                                    });
             registerDevice();
         },
         error: function(xhr, status, error) {
@@ -146,14 +150,11 @@ function publish(publishFields) {
             payload.d[index] = publishFields[index];
         }
 
-        console.log(payload);
-
-        // Create an MQTT message object from the payload
-        var message = new Paho.MQTT.Message(JSON.stringify(payload));
-        message.destinationName = topic;
+        // Publish message
         try {
-            window.client.send(message);
+            window.deviceClient.publish(topic, "json", JSON.stringify(payload));
             window.msgCount += 1;
+            
             $("pre code#publishedMessage").html(JSON.stringify(payload, null, "\t"));
             $('pre code#publishedMessage').each(function(i, block) {
                 hljs.highlightBlock(block);
@@ -207,7 +208,6 @@ function onConnectFailure(error) {
 
 // Connect to MQTT
 function connectDevice() {
-    topic = "iot-2/evt/sensorData/fmt/json";
     $("#deviceId").html(deviceInfo.deviceId);
 
     // Update connection status on screen to "Connecting"
@@ -216,13 +216,13 @@ function connectDevice() {
     console.log("Connecting device to IBM Watson IoT Platform...");
 
     // Initiate the MQTT connection using the password set above in line 8
-    window.client.connect({
-        onSuccess: onConnectSuccess,
-        onFailure: onConnectFailure,
-        userName: "use-token-auth",
-        password: deviceInfo.password,
-        useSSL: true
-    });
+    try {
+        window.deviceClient.connect();
+    } catch(e) {
+        onConnectFailure(e);
+    }
+
+    window.deviceClient.on('connect', onConnectSuccess);
 }
 
 
